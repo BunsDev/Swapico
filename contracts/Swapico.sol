@@ -16,17 +16,17 @@ contract Swapico {
         inicio = _inicio;
     }
     
-    function purchase(address assetAddress, uint256 amountAsset) public {        
+    function purchase(uint256 amount) public {
         require(block.timestamp >= inicio, 'purchase: too soon');
-        require(assetAddress == synthetico, 'purchase: invalid payment asset provided');
-        require(IERC20(authentico).balanceOf(address(this)) >= amountAsset, 'purchase: insufficient liquidity');
-        _purchase(assetAddress, amountAsset);
+        require(IERC20(synthetico).balanceOf(address(msg.sender)) >= amount, 'purchase: insufficient balance');
+        require(IERC20(authentico).balanceOf(address(this)) >= amount, 'purchase: insufficient liquidity');
+        _purchase(amount);
     }
     
-    function _purchase(address assetAddress, uint256 assetAmount) internal {
-        IERC20(assetAddress).burnFrom(msg.sender, assetAmount);
-        IERC20(authentico).transfer(msg.sender, assetAmount);
+    function _purchase(uint256 _amount) internal {
+        IERC20(synthetico).burnFrom(msg.sender, _amount);
+        IERC20(authentico).transfer(msg.sender, _amount);
         
-        emit purchased(msg.sender, assetAmount);
+        emit purchased(msg.sender, _amount);
     }
 }
